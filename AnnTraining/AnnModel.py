@@ -9,7 +9,12 @@ class DiabetesModel(nn.Module):
     
     def __init__(self, input_size):
         super(DiabetesModel, self).__init__()
-        self.fc1 = nn.Linear(input_size, 16)
+        # Define the layers of the model (3 layers) "input_size" is the number of features in the dataset
+        # The first layer has 16 neurons, the second layer has 8 neurons, and the output layer has 1 neuron
+        # The activation function for the first two layers is ReLU, and the output layer uses a sigmoid activation function
+        # The sigmoid function is used to convert the output to a probability value between 0 and 1
+        # **We plan to ajust the number of neurons in each layer to improve the model's performance**
+        self.fc1 = nn.Linear(input_size, 16) 
         self.fc2 = nn.Linear(16, 8)
         self.fc3 = nn.Linear(8, 1)
         self.relu = nn.ReLU()
@@ -23,9 +28,12 @@ class DiabetesModel(nn.Module):
     
     # Training function
     def train (self, train_loader, epochs):
+        # Define the loss function and optimizer
         criterion = nn.BCELoss()
         optimizer = optim.Adam(self.parameters(), lr=0.001)
         
+        # Move the model to the appropriate device (GPU or CPU)
+        self.to(device)
         for epoch in range(epochs):
             self.train()
             running_loss = 0.0
