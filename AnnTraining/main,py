@@ -1,0 +1,13 @@
+from DataBuilder import DataBuilder
+from AnnModel import DiabetesModel
+
+# Load the dataset
+db = DataBuilder("diabetes.csv")
+# Initialize the model, loss function, and optimizer
+model = DiabetesModel(db.get_input_size())
+
+
+
+
+
+
