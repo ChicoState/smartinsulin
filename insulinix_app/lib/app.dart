@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'routes/app_routes.dart';
 
+
 class InsulinixApp extends StatelessWidget {
   const InsulinixApp({super.key});
 
