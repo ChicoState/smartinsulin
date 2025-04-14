@@ -21,7 +21,7 @@ class AllDoneScreen extends StatelessWidget {
             children: [
               const Text("ALL SET!", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              Text("Welcome $userName", style: const TextStyle(fontSize: 20)),
+              Text("Welcome", style: const TextStyle(fontSize: 20)),
               const SizedBox(height: 24),
               const Icon(Icons.check_circle, size: 100, color: Colors.black),
               const SizedBox(height: 24),

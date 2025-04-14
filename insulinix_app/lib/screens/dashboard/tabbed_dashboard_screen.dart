@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'monitor_screen.dart';
 import 'add_note_screen.dart';
 import 'pod_status_screen.dart';
+import '../../widgets/custom_drawer.dart';
+
 
 class TabbedDashboardScreen extends StatelessWidget {
   const TabbedDashboardScreen({super.key});
@@ -11,7 +13,8 @@ class TabbedDashboardScreen extends StatelessWidget {
     return DefaultTabController(
       length: 3, // Number of tabs
       child: Scaffold(
-        appBar: AppBar(
+        drawer: const CustomDrawer(),
+        appBar: AppBar(          
           title: const Text("Dashboard"),
           bottom: const TabBar(
             tabs: [
@@ -22,11 +25,7 @@ class TabbedDashboardScreen extends StatelessWidget {
           ),
         ),
         body: const TabBarView(
-          children: [
-            MonitorScreen(),
-            AddNoteScreen(),
-            PodStatusScreen(),
-          ],
+          children: [MonitorScreen(), AddNoteScreen(), PodStatusScreen()],
         ),
       ),
     );
