@@ -16,7 +16,7 @@ class LaunchScreen extends StatelessWidget {
               const Text("automate insulin system", style: TextStyle(fontSize: 16)),
               const SizedBox(height: 48),
               ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/login'),
+                onPressed: () => Navigator.pushNamed(context, '/signin'),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 child: const Text("SIGN IN"),
               ),

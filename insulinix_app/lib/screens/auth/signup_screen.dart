@@ -72,7 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SIGN UP'),
+        title: const Text('Sign Up'),
         actions: [
           TextButton(
             onPressed: () {
@@ -87,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           children: [
             _buildField("Name", _nameController),
-            _buildField("Create insulinix ID", _insulinIdController),
+            _buildField("Email", _insulinIdController),
             _buildField("Healthcare provider code", _providerCodeController),
             _buildField("Password", _passwordController, obscure: true),
             _buildField("Confirm Password", _confirmPasswordController, obscure: true),
@@ -98,7 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 backgroundColor: Colors.black,
                 minimumSize: const Size.fromHeight(50),
               ),
-              child: const Text('NEXT'),
+              child: const Text('Next', style: TextStyle(fontSize: 18)),
             ),
           ],
         ),
@@ -114,13 +114,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
         obscureText: obscure,
         decoration: InputDecoration(
           labelText: label,
+          labelStyle: const TextStyle(color: Colors.black),
+          // hintText: 'Enter your $label',
+          hintStyle: const TextStyle(color: Colors.black),
           filled: true,
-          fillColor: Colors.black54,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          labelStyle: const TextStyle(color: Colors.white70),
+          border:OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6), 
+                    borderSide: BorderSide(color: Colors.black, width: 1),),
+          //labelStyle: const TextStyle(color: Colors.white70),
         ),
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.black),
       ),
     );
   }
 }
+
+// TextField(
+//                 controller: _idController,
+                
+//                 decoration: InputDecoration(
+//                   labelText: 'Email',
+//                   labelStyle: const TextStyle(color: Colors.black),
+//                   hintText: 'Enter your email',
+//                   hintStyle: const TextStyle(color: Colors.black),
+//                   filled: true,
+//                   border: OutlineInputBorder(
+//                     borderRadius: BorderRadius.circular(6), 
+//                     borderSide: BorderSide(color: Colors.black, width: 1),),
+//                 ),
+//                 style: const TextStyle(color: Colors.black),
+//               ),

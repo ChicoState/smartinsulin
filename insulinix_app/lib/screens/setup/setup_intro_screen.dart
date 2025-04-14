@@ -18,7 +18,7 @@ class SetupIntroScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Welcome $name", style: const TextStyle(fontSize: 22)),
+            Text("Welcome", style: const TextStyle(fontSize: 22)),
             const SizedBox(height: 8),
             const Text("<GREETING MESSAGE>", style: TextStyle(color: Colors.blue)),
             const Text("<SETUP MESSAGE>"),
