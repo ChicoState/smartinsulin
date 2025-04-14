@@ -13,6 +13,7 @@ import '../screens/dashboard/tabbed_dashboard_screen.dart';
 import '../screens/errors/error_overlay_screen.dart';
 import '../screens/errors/error_detail_screen.dart';
 import '../screens/errors/error_notification_screen.dart';
+import '../screens/auth/userprofile_screen.dart';
 
 
 final Map<String, WidgetBuilder> appRoutes = {
@@ -30,5 +31,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/error-overlay': (_) => const ErrorOverlayScreen(),
   '/error-detail': (_) => const ErrorDetailScreen(),
   '/error-notification': (_) => const ErrorNotificationScreen(),
+  '/profile': (_) => const UserProfileScreen(),
 
 };

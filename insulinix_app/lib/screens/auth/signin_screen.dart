@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -18,10 +20,29 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void _handleSignIn() {
+  //void _handleSignIn() {
     // Implement sign-in logic
-    print('ID: ${_idController.text}, Password: ${_passwordController.text}');
+    //print('ID: ${_idController.text}, Password: ${_passwordController.text}');
+    
+  //}
+  void _handleSignIn() async {
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _idController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+    Navigator.pushNamed(context, '/dashboard'); // or wherever you want to go
+  } on FirebaseAuthException catch (e) {
+    String message = 'Login failed';
+    if (e.code == 'user-not-found') {
+      message = 'No user found for that email.';
+    } else if (e.code == 'wrong-password') {
+      message = 'Wrong password provided.';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

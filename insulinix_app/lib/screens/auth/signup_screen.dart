@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; 
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -24,9 +26,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _onNext() {
-    Navigator.pushNamed(context, '/setup-intro');
+  //void _onNext() {
+   // Navigator.pushNamed(context, '/setup-intro');
+  //}
+  void _onNext() async {
+  if (_passwordController.text != _confirmPasswordController.text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Passwords do not match')),
+    );
+    return;
   }
+
+  try {
+    final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _insulinIdController.text.trim(), // Insulin ID = Email
+      password: _passwordController.text.trim(),
+    );
+
+    // ✅ Store extra user info in Firestore
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(credential.user?.uid)
+        .set({
+          'name': _nameController.text.trim(),
+          'providerCode': _providerCodeController.text.trim(),
+          'insulinId': _insulinIdController.text.trim(),
+          'createdAt': Timestamp.now(),
+        });
+
+    Navigator.pushNamed(context, '/setup-intro');
+  } on FirebaseAuthException catch (e) {
+    String message = 'Signup failed';
+    if (e.code == 'email-already-in-use') {
+      message = 'That email is already in use.';
+    } else if (e.code == 'weak-password') {
+      message = 'Password is too weak.';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
