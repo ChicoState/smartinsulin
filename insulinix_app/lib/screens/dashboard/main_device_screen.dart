@@ -3,6 +3,8 @@ import 'components/device_tile.dart';
 import 'components/last_bolus_tile.dart';
 import 'components/cgm_tile.dart';
 import 'components/drawer_menu.dart';
+import 'components/chatbox_screen.dart';
+import 'components/gemini_service.dart';
 
 class MainDeviceScreen extends StatelessWidget {
   const MainDeviceScreen({super.key});

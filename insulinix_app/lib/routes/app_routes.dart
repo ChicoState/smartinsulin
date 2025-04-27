@@ -14,6 +14,8 @@ import '../screens/errors/error_overlay_screen.dart';
 import '../screens/errors/error_detail_screen.dart';
 import '../screens/errors/error_notification_screen.dart';
 import '../screens/auth/userprofile_screen.dart';
+import '../screens/dashboard/components/chatbox_screen.dart';
+import '../screens/dashboard/components/gemini_service.dart';
 
 
 final Map<String, WidgetBuilder> appRoutes = {
@@ -32,5 +34,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/error-detail': (_) => const ErrorDetailScreen(),
   '/error-notification': (_) => const ErrorNotificationScreen(),
   '/profile': (_) => const UserProfileScreen(),
+  '/chatbox': (_) => const ChatBoxScreen(),
 
 };
