@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "854914086833",
+    "project_id": "smart-insulin-app",
+    "storage_bucket": "smart-insulin-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854914086833:android:af440ae5fdefb7ab8a2f90",
+        "android_client_info": {
+          "package_name": "com.example.smart_insulin_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChT6iKgsJLie1EbTHKb89SDkYRmojIO5o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
