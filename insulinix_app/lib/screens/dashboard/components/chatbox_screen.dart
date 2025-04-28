@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'gemini_service.dart'; 
-import 'package:flutter_gemini/flutter_gemini.dart';
+import 'gemini_api.dart';
 
 class ChatBoxScreen extends StatefulWidget {
   const ChatBoxScreen({super.key});
@@ -12,7 +11,7 @@ class ChatBoxScreen extends StatefulWidget {
 class _ChatBoxScreenState extends State<ChatBoxScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<_ChatMessage> _messages = [];
-  final GeminiService _gemini = GeminiService();
+  final GeminiApi _geminiApi = GeminiApi();
   bool _isLoading = false;
 
   void _sendMessage() async {
@@ -25,11 +24,10 @@ class _ChatBoxScreenState extends State<ChatBoxScreen> {
       _isLoading = true;
     });
 
-    final response = await _gemini.sendMessage(text);
-
+    final reply = await _geminiApi.sendMessage(text);
 
     setState(() {
-      _messages.add(_ChatMessage(text: response, isUser: false));
+      _messages.add(_ChatMessage(text: reply, isUser: false));
       _isLoading = false;
     });
   }
@@ -37,13 +35,13 @@ class _ChatBoxScreenState extends State<ChatBoxScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Smart Diabetes Assistant')),
+      appBar: AppBar(title: const Text('Smart Assistant')),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
               reverse: true,
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final msg = _messages[_messages.length - 1 - index];
@@ -56,10 +54,7 @@ class _ChatBoxScreenState extends State<ChatBoxScreen> {
                       color: msg.isUser ? Colors.blue[100] : Colors.green[100],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
-                      msg.text,
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                    child: Text(msg.text),
                   ),
                 );
               },

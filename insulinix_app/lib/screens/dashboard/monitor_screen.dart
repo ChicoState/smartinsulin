@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
+import 'components/cgm_tile.dart'; // Import CGMTile
 
 class MonitorScreen extends StatelessWidget {
   const MonitorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Monitor')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text('CGM Graph', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Container(
-              height: 200,
-              width: double.infinity,
-              color: Colors.grey[300],
-              child: const Center(child: Text('Mock Graph Here')),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Back'),
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'Glucose Monitoring',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          const CGMTile(), // ✅ Added CGM Tile inside Monitor tab
+          const SizedBox(height: 30),
+          const Text(
+            'Your CGM is monitoring your blood glucose trends every 5 minutes.',
+            style: TextStyle(fontSize: 14, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
