@@ -39,6 +39,8 @@ dependencies:
   firebase_auth: ^5.5.2
   firebase_storage: ^12.4.5
   image_picker: ^1.1.2
+  flutter_blue_plus: ^1.2.0
+  fl_chart: ^0.71.0
   
   uuid: ^4.5.1
 
