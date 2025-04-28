@@ -26,47 +26,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  //void _onNext() {
-   // Navigator.pushNamed(context, '/setup-intro');
-  //}
   void _onNext() async {
-  if (_passwordController.text != _confirmPasswordController.text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Passwords do not match')),
-    );
-    return;
-  }
-
-  try {
-    final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _insulinIdController.text.trim(), // Insulin ID = Email
-      password: _passwordController.text.trim(),
-    );
-
-    // ✅ Store extra user info in Firestore
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(credential.user?.uid)
-        .set({
-          'name': _nameController.text.trim(),
-          'providerCode': _providerCodeController.text.trim(),
-          'insulinId': _insulinIdController.text.trim(),
-          'createdAt': Timestamp.now(),
-        });
-
-    Navigator.pushNamed(context, '/setup-intro');
-  } on FirebaseAuthException catch (e) {
-    String message = 'Signup failed';
-    if (e.code == 'email-already-in-use') {
-      message = 'That email is already in use.';
-    } else if (e.code == 'weak-password') {
-      message = 'Password is too weak.';
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+
+    try {
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _insulinIdController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // ✅ Store extra user info in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user?.uid)
+          .set({
+            'name': _nameController.text.trim(),
+            'providerCode': _providerCodeController.text.trim(),
+            'insulinId': _insulinIdController.text.trim(),
+            'createdAt': Timestamp.now(),
+          });
+
+      Navigator.pushNamed(context, '/setup-intro');
+    } on FirebaseAuthException catch (e) {
+      String message = 'Signup failed';
+      if (e.code == 'email-already-in-use') {
+        message = 'That email is already in use.';
+      } else if (e.code == 'weak-password') {
+        message = 'Password is too weak.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      // Handle other types of errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An unexpected error occurred.')),
+      );
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -115,32 +115,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Colors.black),
-          // hintText: 'Enter your $label',
           hintStyle: const TextStyle(color: Colors.black),
           filled: true,
-          border:OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6), 
-                    borderSide: BorderSide(color: Colors.black, width: 1),),
-          //labelStyle: const TextStyle(color: Colors.white70),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: const BorderSide(color: Colors.black, width: 1),
+          ),
         ),
         style: const TextStyle(color: Colors.black),
       ),
     );
   }
 }
-
-// TextField(
-//                 controller: _idController,
-                
-//                 decoration: InputDecoration(
-//                   labelText: 'Email',
-//                   labelStyle: const TextStyle(color: Colors.black),
-//                   hintText: 'Enter your email',
-//                   hintStyle: const TextStyle(color: Colors.black),
-//                   filled: true,
-//                   border: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(6), 
-//                     borderSide: BorderSide(color: Colors.black, width: 1),),
-//                 ),
-//                 style: const TextStyle(color: Colors.black),
-//               ),

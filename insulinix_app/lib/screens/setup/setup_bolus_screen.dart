@@ -9,6 +9,7 @@ class SetupBolusScreen extends StatefulWidget {
 
 class _SetupBolusScreenState extends State<SetupBolusScreen> {
   final _bolusRateController = TextEditingController();
+  bool showBolusInfo = false; // 👈 for dropdown visibility
 
   void _onNext() {
     Navigator.pushNamed(context, '/all-done');
@@ -57,7 +58,78 @@ class _SetupBolusScreenState extends State<SetupBolusScreen> {
               ),
               style: const TextStyle(color: Colors.white),
             ),
+            const SizedBox(height: 20),
+
+            // 🔽 Bolus Info Expandable Section
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  showBolusInfo = !showBolusInfo;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    showBolusInfo ? 'Hide "What is Bolus?"' : 'Show "What is Bolus?"',
+                    style: const TextStyle(
+                      color: Colors.blueAccent,
+                      decoration: TextDecoration.underline,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Icon(
+                    showBolusInfo ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: Colors.blueAccent,
+                  ),
+                ],
+              ),
+            ),
+            if (showBolusInfo)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  child: const Text(
+                    '💉 Bolus insulin is a fast-acting insulin used to control blood sugar spikes, '
+                    'typically taken before meals. Setting a safe bolus rate ensures you do not overdose. '
+                    'Always consult your healthcare provider before adjusting bolus settings.',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 20),
+
+            // ⚠️ Safety Warning Box
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.redAccent, width: 2),
+              ),
+              child: const Text(
+                '⚠️ WARNING:\n\n'
+                'Incorrect bolus settings can lead to dangerous blood sugar levels. '
+                'Only set the maximum bolus rate if you have been advised by your healthcare provider.',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+
             const Spacer(),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
