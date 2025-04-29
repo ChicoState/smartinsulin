@@ -6,9 +6,9 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 // --- UUID Placeholders ---
 // !!! REPLACE THESE WITH YOUR DEVICE'S ACTUAL UUIDs !!!
-const String YOUR_SERVICE_UUID = "0000xxxx-0000-1000-8000-00805f9b34fb"; // Example format
-const String YOUR_WRITE_CHARACTERISTIC_UUID = "0000yyyy-0000-1000-8000-00805f9b34fb";
-const String YOUR_NOTIFY_CHARACTERISTIC_UUID = "0000zzzz-0000-1000-8000-00805f9b34fb";
+const String YOUR_SERVICE_UUID = " 6e400001-b5a3-f393-e0a9-e50e24dcca9e"; // Example format
+const String YOUR_WRITE_CHARACTERISTIC_UUID = " 6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+const String YOUR_NOTIFY_CHARACTERISTIC_UUID = " 6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 // --- End UUID Placeholders ---
 
 
