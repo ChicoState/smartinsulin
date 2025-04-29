@@ -14,7 +14,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     String note = _noteController.text;
     if (note.isNotEmpty) {
       // Save note logic goes here
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Note saved: $note')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Note saved: $note')));
       _noteController.clear();
     }
   }
@@ -22,7 +24,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Note')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text('Add Note'),
+        automaticallyImplyLeading: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -41,7 +47,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             ElevatedButton(
               onPressed: _submitNote,
               child: const Text('Save Note'),
-            )
+            ),
           ],
         ),
       ),
