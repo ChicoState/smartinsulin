@@ -34,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           setState(() {
             userName = doc['name'];
             userEmail = doc['insulinId'];
-            profileImageUrl = doc['profileImageUrl']; // fetch profile image if exists
+            profileImageUrl = doc['profileImageUrl'];
             isLoading = false;
           });
         }
@@ -49,23 +49,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> pickAndUploadProfilePicture() async {
+  Future<void> _pickAndUploadImage(ImageSource source) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      final pickedFile = await picker.pickImage(source: source);
 
       if (pickedFile != null) {
         final file = File(pickedFile.path);
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          final ref = FirebaseStorage.instance.ref().child('profile_pictures').child('${user.uid}.jpg');
+          final ref = FirebaseStorage.instance
+              .ref()
+              .child('profile_pictures')
+              .child('${user.uid}.jpg');
           await ref.putFile(file);
-
           final downloadUrl = await ref.getDownloadURL();
 
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-            'profileImageUrl': downloadUrl,
-          });
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({'profileImageUrl': downloadUrl});
 
           setState(() {
             profileImageUrl = downloadUrl;
@@ -82,6 +85,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SnackBar(content: Text('Failed to upload picture.')),
       );
     }
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take a photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndUploadImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndUploadImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -101,7 +132,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       CircleAvatar(
                         radius: 60,
                         backgroundColor: Colors.grey[300],
-                        backgroundImage: profileImageUrl != null ? NetworkImage(profileImageUrl!) : null,
+                        backgroundImage: profileImageUrl != null
+                            ? NetworkImage(profileImageUrl!)
+                            : null,
                         child: profileImageUrl == null
                             ? const Icon(Icons.person, size: 60, color: Colors.white)
                             : null,
@@ -110,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         bottom: 0,
                         right: 4,
                         child: GestureDetector(
-                          onTap: pickAndUploadProfilePicture,
+                          onTap: _showImageSourceDialog,
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
@@ -136,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      // Later: Edit profile logic
+                      // TODO: Add edit profile logic here
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                     child: const Text("Edit Profile"),

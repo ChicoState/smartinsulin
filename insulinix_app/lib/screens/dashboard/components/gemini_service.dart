@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class GeminiService {
-  final String apiKey = 'AIzaSyAxjXBiauJfJdbESA2fQ7f0KJKR4GdJcM8';
+class GeminiApi {
+  final String apiKey = 'AIzaSyDVHu4up-HfooaGc9rHH_BYx3kdKKUJ_1w'; 
 
-  Future<String> sendMessage(String message) async {
-    final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey');
+  Future<String> sendMessage(String userMessage) async {
+    final Uri url = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=$apiKey'); 
 
     final response = await http.post(
       url,
@@ -14,8 +14,9 @@ class GeminiService {
       body: jsonEncode({
         "contents": [
           {
+            "role": "user",
             "parts": [
-              {"text": message}
+              {"text": userMessage}
             ]
           }
         ]
@@ -24,12 +25,11 @@ class GeminiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final text = data['candidates'][0]['content']['parts'][0]['text'];
-      return text.trim();
+      final content = data['candidates'][0]['content']['parts'][0]['text'];
+      return content.trim();
     } else {
-      print('❌ Gemini error: ${response.statusCode}');
-      print('❌ Body: ${response.body}');
-      return "Sorry, I couldn't reach the assistant.";
+      print('❌ Gemini API error ${response.statusCode}: ${response.body}');
+      return "Sorry, I couldn't connect to the assistant.";
     }
   }
 }

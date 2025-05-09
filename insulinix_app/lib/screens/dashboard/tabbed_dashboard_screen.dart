@@ -5,6 +5,7 @@ import 'pod_status_screen.dart';
 import 'components/chatbox_screen.dart';
 import 'components/drawer_menu.dart';
 import 'components/cgm_tile.dart';
+import 'components/glucose_data.dart';
 
 class TabbedDashboardScreen extends StatelessWidget {
   const TabbedDashboardScreen({super.key});
