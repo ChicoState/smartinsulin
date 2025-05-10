@@ -40,7 +40,8 @@ class _SetupBolusScreenState extends State<SetupBolusScreen> {
               'SET MAXIMUM BOLUS RATE',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.blue,
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
                 decoration: TextDecoration.underline,
               ),
             ),
@@ -73,14 +74,15 @@ class _SetupBolusScreenState extends State<SetupBolusScreen> {
                   Text(
                     showBolusInfo ? 'Hide "What is Bolus?"' : 'Show "What is Bolus?"',
                     style: const TextStyle(
-                      color: Colors.blueAccent,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
                       decoration: TextDecoration.underline,
                       fontSize: 16,
                     ),
                   ),
                   Icon(
                     showBolusInfo ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                    color: Colors.blueAccent,
+                    color: Colors.green,
                   ),
                 ],
               ),
@@ -91,9 +93,9 @@ class _SetupBolusScreenState extends State<SetupBolusScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
+                    color: Colors.green[50],
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blueAccent),
+                    border: Border.all(color: Colors.green.shade600),
                   ),
                   child: const Text(
                     '💉 Bolus insulin is a fast-acting insulin used to control blood sugar spikes, '
@@ -135,13 +137,13 @@ class _SetupBolusScreenState extends State<SetupBolusScreen> {
               children: [
                 ElevatedButton(
                   onPressed: _onCancel,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black87),
-                  child: const Text('CANCEL'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  child: const Text('CANCEL', style: TextStyle(fontSize: 14, color: Colors.white)),
                 ),
                 ElevatedButton(
                   onPressed: _onNext,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                  child: const Text('NEXT'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  child: const Text('NEXT', style: TextStyle(fontSize: 14, color: Colors.white)),
                 ),
               ],
             ),

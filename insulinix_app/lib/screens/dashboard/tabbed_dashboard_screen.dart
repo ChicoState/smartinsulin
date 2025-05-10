@@ -34,7 +34,7 @@ class TabbedDashboardScreen extends StatelessWidget {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.deepPurpleAccent,
+          backgroundColor: Colors.green,
           child: const Icon(Icons.chat_bubble_outline),
           tooltip: 'Chat Assistant',
           onPressed: () {

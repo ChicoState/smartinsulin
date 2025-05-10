@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'components/glucose_data.dart';
+import 'user_log_service.dart';
 
 class MonitorScreen extends StatefulWidget {
   const MonitorScreen({super.key});
@@ -11,116 +16,188 @@ class MonitorScreen extends StatefulWidget {
 
 class _MonitorScreenState extends State<MonitorScreen> {
   late List<Map<String, dynamic>> cgmData;
-  final TextEditingController _carbsController = TextEditingController(text: '45');
-  final TextEditingController _targetGlucoseController = TextEditingController(text: '100');
+  bool showGraph = false;
+  String userName = '';
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     cgmData = GlucoseDataService.generateCGMData();
+    _loadUserName();
   }
 
-  @override
-  void dispose() {
-    _carbsController.dispose();
-    _targetGlucoseController.dispose();
-    super.dispose();
+  Future<void> _loadUserName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      setState(() {
+        userName = doc.data()?['name'] ?? 'User';
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     final double latestGlucose = cgmData.last['glucose'];
-
-    final double carbs = double.tryParse(_carbsController.text) ?? 0;
-    final double targetGlucose = double.tryParse(_targetGlucoseController.text) ?? 100;
-
-    final insulinDose = GlucoseDataService.calculateInsulinDose(
+    final double insulinDose = GlucoseDataService.calculateInsulinDose(
       currentGlucose: latestGlucose,
-      targetGlucose: targetGlucose,
+      targetGlucose: 100,
       correctionFactor: 50,
-      carbsEaten: carbs,
+      carbsEaten: 45,
       carbRatio: 10,
     );
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Smart Glucose Monitor')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'Current Glucose',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${latestGlucose.toStringAsFixed(0)} mg/dL',
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
+    final String formattedDate = DateFormat('MM/dd/yy').format(DateTime.now());
 
-            // Inputs
+    // ✅ Update logs
+    UserLogService.glucoseData.clear();
+    UserLogService.glucoseData.addAll(cgmData.map((e) {
+      return {
+        'time': e['timestamp'] != null
+            ? DateFormat('h:mm a').format(e['timestamp'])
+            : 'unknown',
+        'value': e['glucose'],
+      };
+    }));
+
+    UserLogService.insulinData.add({
+      'time': DateFormat('h:mm a').format(DateTime.now()),
+      'units': insulinDose.toStringAsFixed(1),
+    });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("$userName's device"),
+        automaticallyImplyLeading: false,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          children: [
+            // Glucose display
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              color: Colors.grey.shade300,
+              child: Column(
+                children: [
+                  Text(
+                    '${latestGlucose.toStringAsFixed(0)}',
+                    style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+                  ),
+                  const Text('mg/dL', style: TextStyle(fontSize: 18)),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            ElevatedButton(
+              onPressed: () {}, // Hook up PDF export
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade600,
+                minimumSize: const Size.fromHeight(40),
+              ),
+              child: const Text('Export to PDF', style: TextStyle(color: Colors.white)),
+            ),
+
+            const SizedBox(height: 16),
+
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _carbsController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Carbs Eaten (g)',
-                      border: OutlineInputBorder(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    color: Colors.grey.shade300,
+                    child: Column(
+                      children: [
+                        const Text('Last Bolus', style: TextStyle(fontSize: 14)),
+                        Text(formattedDate, style: const TextStyle(fontSize: 12)),
+                        Text(
+                          '${insulinDose.toStringAsFixed(1)}',
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        const Text('Units'),
+                      ],
                     ),
-                    onChanged: (_) => setState(() {}),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
-                    controller: _targetGlucoseController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Target Glucose',
-                      border: OutlineInputBorder(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    color: Colors.grey.shade300,
+                    child: Column(
+                      children: [
+                        const Text('CGM', style: TextStyle(fontSize: 14)),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: () => setState(() => showGraph = !showGraph),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade600,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          ),
+                          child: const Text('View', style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
                     ),
-                    onChanged: (_) => setState(() {}),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.deepPurple),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    'Recommended Insulin Dose',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${insulinDose.toStringAsFixed(1)} units',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 24),
 
-            const SizedBox(height: 20),
-            const Text(
-              'Glucose Trends (48h)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            if (showGraph) ...[
+              const Text(
+                '24-Hour Glucose Trend',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(height: 250, child: _buildCGMGraph()),
+            ],
+
+            const SizedBox(height: 24),
+
+            ExpansionTile(
+              title: const Text('What is CGM?'),
+              children: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'CGM stands for Continuous Glucose Monitoring. It tracks your glucose levels 24/7 using a small sensor.',
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 250,
-              child: _buildCGMGraph(),
+            ExpansionTile(
+              title: const Text('What is a Bolus?'),
+              children: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'A bolus is a dose of insulin taken to manage a rise in blood glucose, typically after meals.',
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: const Text('What does mg/dL mean?'),
+              children: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'mg/dL stands for milligrams per deciliter. It is the standard unit used to measure glucose levels in your blood.',
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -129,19 +206,52 @@ class _MonitorScreenState extends State<MonitorScreen> {
   }
 
   Widget _buildCGMGraph() {
-    final spots = cgmData.asMap().entries.map((entry) {
-      final index = entry.key.toDouble();
-      final value = entry.value['glucose'];
-      return FlSpot(index, value);
-    }).toList();
+    final spots = <FlSpot>[];
+    final labels = <double, String>{};
+
+    for (int i = 0; i < cgmData.length; i++) {
+      final glucose = cgmData[i]['glucose'];
+      final timestamp = cgmData[i]['timestamp'];
+
+      spots.add(FlSpot(i.toDouble(), glucose));
+
+      if (timestamp != null && timestamp is DateTime && i % 4 == 0) {
+        final label = DateFormat('ha').format(timestamp);
+        labels[i.toDouble()] = label;
+      }
+    }
 
     return LineChart(
       LineChartData(
         minY: 60,
         maxY: 220,
-        titlesData: FlTitlesData(show: false),
-        borderData: FlBorderData(show: false),
-        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 4,
+              getTitlesWidget: (value, _) {
+                return Text(
+                  labels[value] ?? '',
+                  style: const TextStyle(fontSize: 10),
+                );
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 20,
+              getTitlesWidget: (value, _) {
+                return Text('${value.toInt()}', style: const TextStyle(fontSize: 10));
+              },
+            ),
+          ),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        gridData: FlGridData(show: true),
+        borderData: FlBorderData(show: true),
         lineBarsData: [
           LineChartBarData(
             spots: spots,

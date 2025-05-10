@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // 👈 for formatting date nicely
+import 'package:intl/intl.dart';
+import 'user_log_service.dart';
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({super.key});
@@ -10,73 +11,165 @@ class AddNoteScreen extends StatefulWidget {
 
 class _AddNoteScreenState extends State<AddNoteScreen> {
   final TextEditingController _noteController = TextEditingController();
-  final List<Map<String, String>> _notes = []; // ✅ Note with text + date
+  final TextEditingController _mealController = TextEditingController();
+
+  final List<Map<String, String>> _notes = [];
+  final List<Map<String, String>> _meals = [];
+
+  String _selectedMood = '🙂';
+  final List<String> moods = ['😊', '🙂', '😐', '😢', '😡'];
 
   void _submitNote() {
-    String noteText = _noteController.text.trim();
-    if (noteText.isNotEmpty) {
-      final String formattedDate = DateFormat('MMM d, yyyy - h:mm a').format(DateTime.now());
+    final text = _noteController.text.trim();
+    if (text.isNotEmpty) {
+      final time = DateFormat('MMM d, yyyy - h:mm a').format(DateTime.now());
+
       setState(() {
-        _notes.add({
-          'text': noteText,
-          'date': formattedDate,
-        });
+        _notes.add({'text': text, 'date': time, 'mood': _selectedMood});
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Note saved!')),
-      );
+
+      // ✅ Log note to shared service
+      UserLogService.notesData.add({
+        'date': time,
+        'note': text,
+      });
+
       _noteController.clear();
     }
+  }
+
+  void _submitMeal() {
+    final text = _mealController.text.trim();
+    if (text.isNotEmpty) {
+      final time = DateFormat('MMM d, yyyy - h:mm a').format(DateTime.now());
+
+      setState(() {
+        _meals.add({'text': text, 'date': time});
+      });
+
+      // ✅ Log meal to shared service
+      UserLogService.mealData.add({
+        'date': time,
+        'text': text,
+      });
+
+      _mealController.clear();
+    }
+  }
+
+  Widget _buildMoodSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: moods.map((emoji) {
+        final isSelected = _selectedMood == emoji;
+        return GestureDetector(
+          onTap: () => setState(() => _selectedMood = emoji),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.green.shade100 : Colors.grey.shade200,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected ? Colors.green.shade600 : Colors.grey,
+                width: 2,
+              ),
+            ),
+            child: Text(emoji, style: const TextStyle(fontSize: 24)),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Note')),
+      appBar: AppBar(
+        title: const Text('Add Note'),
+        automaticallyImplyLeading: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: ListView(
           children: [
-            const Text('Add a quick note:', style: TextStyle(fontSize: 18)),
-            const SizedBox(height: 12),
+            _buildSectionHeader('How are you feeling?'),
+            _buildMoodSelector(),
+
+            const SizedBox(height: 24),
+            const Text('Write a note:', style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
             TextField(
               controller: _noteController,
               decoration: const InputDecoration(
-                hintText: 'Enter note...',
+                hintText: 'Enter your thoughts...',
                 border: OutlineInputBorder(),
               ),
-              maxLines: 4,
+              maxLines: 3,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _submitNote,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
+                backgroundColor: Colors.green.shade600,
                 minimumSize: const Size.fromHeight(50),
               ),
-              child: const Text('Save Note'),
+              child: const Text('Save Note', style: TextStyle(color: Colors.white)),
             ),
-            const SizedBox(height: 24),
 
-            // ✅ Display saved notes
-            Expanded(
-              child: _notes.isEmpty
-                  ? const Center(child: Text('No notes added yet.'))
-                  : ListView.builder(
-                      itemCount: _notes.length,
-                      itemBuilder: (context, index) {
-                        final note = _notes[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: ListTile(
-                            leading: const Icon(Icons.note),
-                            title: Text(note['text'] ?? ''),
-                            subtitle: Text(note['date'] ?? ''),
-                          ),
-                        );
-                      },
+            _buildSectionHeader('Your Notes'),
+            if (_notes.isEmpty)
+              const Text('No notes yet.')
+            else
+              ..._notes.map((note) => Card(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    child: ListTile(
+                      leading: Text(note['mood'] ?? '', style: const TextStyle(fontSize: 24)),
+                      title: Text(note['text'] ?? ''),
+                      subtitle: Text(note['date'] ?? ''),
                     ),
+                  )),
+
+            _buildSectionHeader('Log Your Meals'),
+            TextField(
+              controller: _mealController,
+              decoration: const InputDecoration(
+                hintText: 'What did you eat?',
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: _submitMeal,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade600,
+                minimumSize: const Size.fromHeight(50),
+              ),
+              child: const Text('Save Meal', style: TextStyle(color: Colors.white)),
+            ),
+
+            _buildSectionHeader('Meal Log'),
+            if (_meals.isEmpty)
+              const Text('No meals logged yet.')
+            else
+              ..._meals.map((meal) => Card(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    child: ListTile(
+                      leading: const Icon(Icons.restaurant_menu),
+                      title: Text(meal['text'] ?? ''),
+                      subtitle: Text(meal['date'] ?? ''),
+                    ),
+                  )),
           ],
         ),
       ),

@@ -57,14 +57,14 @@ class _SetupIntroScreenState extends State<SetupIntroScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Welcome, $userName!",
+                      "Welcome to Insulinx, $userName!",
                       style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      "Let's get your setup started, $userName!",
-                      style: const TextStyle(fontSize: 18, color: Colors.blue),
+                      "Let's get your setup started!",
+                      style: const TextStyle(fontSize: 18, color: Colors.green),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),

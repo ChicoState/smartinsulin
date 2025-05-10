@@ -29,21 +29,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-        if (doc.exists) {
-          setState(() {
-            userName = doc['name'];
-            userEmail = doc['insulinId'];
-            profileImageUrl = doc['profileImageUrl'];
-            isLoading = false;
-          });
-        }
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          userName = doc.data()?['name'] ?? 'User';
+          userEmail = user.email ?? 'email@example.com';
+          profileImageUrl = doc.data()?['profileImageUrl'];
+          isLoading = false;
+        });
       }
     } catch (e) {
       print('Error fetching profile: $e');
       setState(() {
         userName = "User";
-        userEmail = "unknown@example.com";
+        userEmail = "email@example.com";
         isLoading = false;
       });
     }
@@ -115,17 +117,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showEditProfileDialog() {
+    final nameController = TextEditingController(text: userName ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Name'),
+        content: TextField(
+          controller: nameController,
+          decoration: const InputDecoration(
+            labelText: 'Name',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final newName = nameController.text.trim();
+              final user = FirebaseAuth.instance.currentUser;
+
+              if (newName.isNotEmpty && user != null) {
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .update({'name': newName});
+                setState(() {
+                  userName = newName;
+                });
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Profile updated')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade600,
+            ),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Profile picture with edit icon
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: [
@@ -147,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: Colors.green.shade600,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.camera_alt, size: 20, color: Colors.white),
@@ -156,23 +207,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 20),
+
+                  // Display name
                   Text(
                     userName ?? 'User',
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
+
+                  // Display email
                   Text(
                     userEmail ?? 'email@example.com',
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () {
-                      // TODO: Add edit profile logic here
-                    },
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                    child: const Text("Edit Profile"),
+
+                  // Edit button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _showEditProfileDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade600,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        "Edit Profile",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
                   ),
                 ],
               ),
