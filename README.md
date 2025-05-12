@@ -2,6 +2,10 @@
 
 ## Overview
 
+<p align="center">
+  <img src="Logo.png" alt="Smart Insulin" width="300"/>
+</p>
+
 The Smart Insulin Application is a mobile platform developed using Flutter to aid individuals in managing their diabetes. It integrates various features, including:
 
 * User authentication (sign-in/sign-up)
