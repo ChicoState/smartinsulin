@@ -57,7 +57,8 @@ class _PodStatusScreenState extends State<PodStatusScreen> {
     final isCharging = _batterySimulator.charging;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pod Status')),
+      appBar: AppBar(title: const Text('Pod Status'), centerTitle: true,),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

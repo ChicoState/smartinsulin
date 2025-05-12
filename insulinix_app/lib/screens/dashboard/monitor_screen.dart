@@ -75,7 +75,9 @@ class _MonitorScreenState extends State<MonitorScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        
         title: Text("$userName's device"),
+        centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: Padding(
