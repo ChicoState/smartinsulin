@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -40,7 +40,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: _passwordController.text.trim(),
       );
 
-      // ✅ Store extra user info in Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(credential.user?.uid)
@@ -61,11 +60,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
-      // Handle other types of errors
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An unexpected error occurred.')),
       );
-    }
+    } 
   }
 
   @override
@@ -92,14 +90,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
             _buildField("Password", _passwordController, obscure: true),
             _buildField("Confirm Password", _confirmPasswordController, obscure: true),
             const SizedBox(height: 24),
+
             ElevatedButton(
-              onPressed: _onNext,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                minimumSize: const Size.fromHeight(50),
-              ),
-              child: const Text('Next', style: TextStyle(fontSize: 18)),
-            ),
+                    onPressed: _onNext,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green.shade600,
+                      minimumSize: const Size.fromHeight(50),
+                    ),
+                    child: const Text('Next', style: TextStyle(fontSize: 18, color: Colors.white)),
+              
+                  ),
           ],
         ),
       ),

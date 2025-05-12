@@ -1,14 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DrawerMenu extends StatelessWidget {
+class DrawerMenu extends StatefulWidget {
   const DrawerMenu({super.key});
 
   @override
+  State<DrawerMenu> createState() => _DrawerMenuState();
+}
+
+class _DrawerMenuState extends State<DrawerMenu> {
+  String userName = 'Smart Insulin User';
+  final user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
+      if (doc.exists) {
+        setState(() {
+          userName = doc.data()?['name'] ?? 'User';
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
     final userEmail = user?.email ?? 'No email';
-    final userName = user?.displayName ?? 'Smart Insulin User';
 
     return Drawer(
       child: ListView(
@@ -16,17 +43,24 @@ class DrawerMenu extends StatelessWidget {
         children: [
           UserAccountsDrawerHeader(
             decoration: const BoxDecoration(
-              color: Colors.deepPurpleAccent,
+              color: Colors.green,
             ),
             currentAccountPicture: const CircleAvatar(
               backgroundColor: Colors.white,
-              child: Icon(Icons.person, size: 50, color: Colors.deepPurpleAccent),
+              child: Icon(Icons.person, size: 50, color: Colors.green),
             ),
             accountName: Text(
-              userName,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Hello, $userName',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             accountEmail: Text(userEmail),
+          ),
+          ListTile(
+            leading: const Icon(Icons.monitor_heart),
+            title: const Text('Monitoring Account'),
+            onTap: () {
+              Navigator.pushNamed(context, '/monitoring');
+            },
           ),
           ListTile(
             leading: const Icon(Icons.person),
@@ -56,7 +90,7 @@ class DrawerMenu extends StatelessWidget {
               Navigator.pushNamed(context, '/account');
             },
           ),
-          const Divider(), // ✨ A nice separator
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.redAccent),
             title: const Text('Sign Out', style: TextStyle(color: Colors.redAccent)),

@@ -20,6 +20,7 @@ import '../screens/dashboard/profile_screen.dart';
 import '../screens/dashboard/settings_screen.dart';
 import '../screens/dashboard/schedules_screen.dart';
 import '../screens/dashboard/account_screen.dart';
+import '../screens/dashboard/monitoring_account.dart';
 
 
 final Map<String, WidgetBuilder> appRoutes = {
@@ -43,5 +44,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/settings': (_) => const SettingsScreen(),
   '/schedules': (_) => const SchedulesScreen(),
   '/account': (_) => const AccountScreen(),
+  '/monitoring': (_) => const MonitoringScreen(),
+
 
 };

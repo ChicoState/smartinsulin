@@ -5,6 +5,7 @@ import 'pod_status_screen.dart';
 import 'components/chatbox_screen.dart';
 import 'components/drawer_menu.dart';
 import 'components/cgm_tile.dart';
+import 'components/glucose_data.dart';
 
 class TabbedDashboardScreen extends StatelessWidget {
   const TabbedDashboardScreen({super.key});
@@ -33,7 +34,7 @@ class TabbedDashboardScreen extends StatelessWidget {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.deepPurpleAccent,
+          backgroundColor: Colors.green,
           child: const Icon(Icons.chat_bubble_outline),
           tooltip: 'Chat Assistant',
           onPressed: () {
