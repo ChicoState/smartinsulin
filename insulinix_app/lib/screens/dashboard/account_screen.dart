@@ -5,14 +5,92 @@ class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
 
   void _changeEmail(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Change Email feature coming soon!')),
+    final emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Change Email'),
+        content: TextField(
+          controller: emailController,
+          decoration: const InputDecoration(
+            labelText: 'New Email',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              final newEmail = emailController.text.trim();
+              final user = FirebaseAuth.instance.currentUser;
+
+              if (newEmail.isNotEmpty && user != null) {
+                try {
+                  await user.updateEmail(newEmail);
+                  await user.sendEmailVerification();
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Email updated. Verification sent.')),
+                  );
+                } catch (e) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error updating email: $e')),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade600),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
   void _changePassword(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Change Password feature coming soon!')),
+    final passwordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Change Password'),
+        content: TextField(
+          controller: passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: 'New Password',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              final newPassword = passwordController.text.trim();
+              final user = FirebaseAuth.instance.currentUser;
+
+              if (newPassword.isNotEmpty && user != null) {
+                try {
+                  await user.updatePassword(newPassword);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password updated.')),
+                  );
+                } catch (e) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error updating password: $e')),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade600),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -22,15 +100,11 @@ class AccountScreen extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Delete Account'),
         content: const Text(
-          '⚠️ WARNING:\n\nDeleting your account is permanent and cannot be undone.\n\n'
-          'Are you sure you want to proceed?',
+          '⚠️ WARNING:\n\nDeleting your account is permanent and cannot be undone.\n\nAre you sure you want to proceed?',
           style: TextStyle(color: Colors.redAccent),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
@@ -102,7 +176,6 @@ class AccountScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 30),
-
             ElevatedButton.icon(
               onPressed: () => _confirmDeleteAccount(context),
               style: ElevatedButton.styleFrom(

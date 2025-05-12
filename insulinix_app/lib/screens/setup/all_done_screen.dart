@@ -57,26 +57,26 @@ class _AllDoneScreenState extends State<AllDoneScreen> {
                   children: [
                     const Text(
                       "ALL SET!",
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       "Welcome, $userName!",
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20, color: Colors.green),
                     ),
                     const SizedBox(height: 24),
-                    const Icon(Icons.check_circle, size: 100, color: Colors.black),
+                    const Icon(Icons.check_circle, size: 100, color: Colors.green),
                     const SizedBox(height: 24),
                     const Text(
                       "Your device has been linked to your account!",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,),
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () => _goToDeviceScreen(context),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                      child: const Text("OK!"),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade600),
+                      child: const Text("OK!", style: TextStyle(fontSize: 14, color: Colors.white)),
                     ),
                   ],
                 ),
